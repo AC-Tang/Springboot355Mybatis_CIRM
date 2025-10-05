@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.service.annotation.PostExchange;
 
 import java.util.Map;
 
@@ -16,13 +17,18 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestParam String username,@RequestParam String password){
-        return userService.login(username, password);
+    public ResponseEntity<Map<String, Object>> login(@RequestParam String userName,@RequestParam String password){
+        return userService.login(userName, password);
     }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody User user){
         return userService.register(user);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<Map<String, Object>> update(@RequestParam String oldUserName, @RequestBody User user){
+        return userService.update(oldUserName, user);
     }
 
     @PostMapping("/updatePwd")

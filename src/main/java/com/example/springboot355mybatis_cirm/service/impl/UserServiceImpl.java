@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +40,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         map.put("userName", userName);
         map.put("userPassword", password);
         map.put(("roleName"),user.getRoleName());
+        map.put(("realName"),user.getRealName());
+        map.put(("department"),user.getDepartment());
         map.put(("success"),true);
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("user_name", userName);
+        updateWrapper.set("last_login_time", LocalDateTime.now());
+        userMapper.update(updateWrapper);
         return ResponseEntity.ok(map);
     }
 
@@ -63,6 +70,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         else {
             map.put("success", false);
             map.put("message", "注册失败");
+        }
+        return ResponseEntity.ok(map);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> update(String oldUserName, User user) {
+        Map<String, Object> map = new HashMap<>();
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("user_name", oldUserName);
+        int rows = userMapper.update(user, updateWrapper);
+        if(rows == 1){
+            map.put("success", true);
+        }
+        else {
+            map.put("success", false);
+            map.put("message", "更新用户信息失败");
         }
         return ResponseEntity.ok(map);
     }

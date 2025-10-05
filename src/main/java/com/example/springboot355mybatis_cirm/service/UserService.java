@@ -12,4 +12,5 @@ public interface UserService extends IService<User> {
     ResponseEntity<Map<String, Object>> login(String username, String password);
     ResponseEntity<Map<String, Object>> register(User user);
     ResponseEntity<Map<String, Object>> updatePassword(User user);
+    ResponseEntity<Map<String, Object>> update(String oldUserName, User user);
 }
