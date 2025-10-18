@@ -32,7 +32,17 @@ public class UserController {
     }
 
     @PostMapping("/updatePwd")
-    public ResponseEntity<Map<String, Object>> updatePassword(@RequestBody User user){
-        return userService.updatePassword(user);
+    public ResponseEntity<Map<String, Object>> updatePassword(@RequestBody Map<String, String> request){
+        return userService.updatePassword(request);
+    }
+
+    @GetMapping("/getSecurityInfo")
+    public ResponseEntity<Map<String, Object>> getSecurityInfo(@RequestParam String userName){
+        return userService.getSecurityInfo(userName);
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<Map<String, Object>> info(@RequestParam String userName){
+        return userService.info(userName);
     }
 }

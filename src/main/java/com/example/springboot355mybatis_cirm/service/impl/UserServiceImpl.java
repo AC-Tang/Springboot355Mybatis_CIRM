@@ -7,7 +7,6 @@ import com.example.springboot355mybatis_cirm.entity.User;
 import com.example.springboot355mybatis_cirm.mapper.UserMapper;
 import com.example.springboot355mybatis_cirm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +36,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             map.put("message", "账号或密码错误");
             return ResponseEntity.badRequest().body(map);
         }
+        map.put("userId", user.getUserId());
         map.put("userName", userName);
         map.put("userPassword", password);
         map.put(("roleName"),user.getRoleName());
@@ -70,6 +70,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         else {
             map.put("success", false);
             map.put("message", "注册失败");
+            return ResponseEntity.badRequest().body(map);
         }
         return ResponseEntity.ok(map);
     }
@@ -86,33 +87,69 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         else {
             map.put("success", false);
             map.put("message", "更新用户信息失败");
+            return ResponseEntity.badRequest().body(map);
         }
         return ResponseEntity.ok(map);
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> updatePassword(User user) {
+    public ResponseEntity<Map<String, Object>> getSecurityInfo(String name){
         Map<String, Object> map = new HashMap<>();
-        String username = user.getUserName();
-        String newPwd = user.getPassword();
-        if (!newPwd.matches("^[A-Za-z0-9]{6,}$")) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_name", name);
+        User user = userMapper.selectOne(queryWrapper);
+        if(user == null){
             map.put("success", false);
-            map.put("message", "新密码必须是 6 位以上字母或数字");
+            map.put("message", "获取密保信息错误");
             return ResponseEntity.badRequest().body(map);
         }
+        else {
+            map.put("success", true);
+            map.put("securityQuestion", user.getSecurityQuestion());
+            map.put("securityAnswer", user.getSecurityAnswer());
+            map.put("password",user.getPassword());
+        }
+        return ResponseEntity.ok(map);
+    }
 
-        User dbUser = userMapper.selectOne(new QueryWrapper<User>().eq("user_name", username));
-        if (user.getPassword().equals(dbUser.getPassword())) {
+    @Override
+    public ResponseEntity<Map<String, Object>> updatePassword(Map<String, String> mp) {
+        Map<String, Object> map = new HashMap<>();
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("user_name", mp.get("userName"));
+        updateWrapper.set("password", mp.get("password"));
+        int rows = userMapper.update(updateWrapper);
+        if(rows == 1){
+            map.put("success", true);
+        }
+        else {
             map.put("success", false);
-            map.put("message", "新密码不能与旧密码相同");
+            map.put("message", "更新用户密码失败");
             return ResponseEntity.badRequest().body(map);
         }
-        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("user_name", username);
-        updateWrapper.set("password", newPwd);
-        int rows = userMapper.update(updateWrapper);
-        return ResponseEntity.status(rows == 1 ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("success", rows == 1,
-                        "message", rows == 1 ? "密码重置成功" : "更新失败，请重试"));
+        return ResponseEntity.ok(map);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> info(String name){
+        Map<String, Object> map = new HashMap<>();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_name", name);
+        User user = userMapper.selectOne(queryWrapper);
+        if(user == null){
+            map.put("success", false);
+            map.put("message", "获取用户信息错误");
+            return ResponseEntity.badRequest().body(map);
+        }
+        else {
+            map.put("success", true);
+            map.put("userName", user.getUserName());
+            map.put("userPassword", user.getPassword());
+            map.put(("roleName"),user.getRoleName());
+            map.put(("realName"),user.getRealName());
+            map.put(("department"),user.getDepartment());
+            map.put("email",user.getEmail());
+        }
+        return ResponseEntity.ok(map);
     }
 }

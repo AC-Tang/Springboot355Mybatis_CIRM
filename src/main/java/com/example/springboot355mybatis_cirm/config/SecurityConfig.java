@@ -23,6 +23,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/manager/**").permitAll()
                         .requestMatchers("/user/**").permitAll()
+                        .requestMatchers("/article/**").permitAll()
+                        .requestMatchers("/category/**").permitAll()
+                        .requestMatchers("/attach/**").permitAll()
+                        .requestMatchers("/captcha/**").permitAll()
+                        .requestMatchers("img/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults())

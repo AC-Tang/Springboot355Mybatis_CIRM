@@ -1,17 +1,11 @@
-package com.example.springboot355mybatis_cirm.entity;
+package com.example.springboot355mybatis_cirm.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
-public class Article {
-    @TableId(value = "article_id", type = IdType.AUTO)
+public class ArticleInfo {
     private int articleId;
     private String title;
     private String content;
@@ -20,13 +14,15 @@ public class Article {
     private Integer authorId;
     private Integer status;
     private Integer isTop;
-    private Boolean isDelete;
     private Date publishTime;
     private Date createTime;
     private Date updateTime;
     private Integer pageViews;
     private String tag;
-
-    private String coverImageType;
     private String coverImagePath;
+    private String coverImageType;
+
+    private String userName;
+    private String realName;
+    private String categoryName;
 }
